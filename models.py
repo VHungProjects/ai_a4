@@ -132,26 +132,7 @@ class RegressionModel(object):
         Trains the model.
         """
         "*** YOUR CODE HERE ***"
-        BestFit = False
-        while not BestFit:
-            count = 0
-            totalLoss = 0
-            for x, y in dataset.iterate_once(25):
-                loss = self.get_loss(x,y)
-                totalLoss += nn.as_scalar(loss)
-                count+=1
-
-                grad_W1,grad_b1,grad_W2,grad_b2,grad_W3,grad_b3 = nn.gradients([self.W1,self.B1,self.W2,self.B2,self.W3,self.B3],loss)
-                self.W1.update(-self.learn, grad_W1)
-                self.B1.update(-self.learn, grad_b1)
-                self.W2.update(-self.learn, grad_W2)
-                self.B2.update(-self.learn, grad_b2)
-                self.W3.update(-self.learn, grad_W3)
-                self.B3.update(-self.learn, grad_b3)
-
-            if(totalLoss/count < 0.001):
-                BestFit = True
-                    """
+        
         while True:
             for xmat, yvec in dataset.iterate_once(self.batch):
                 loss = self.get_loss(xmat,yvec)
@@ -166,7 +147,7 @@ class RegressionModel(object):
 
             if nn.as_scalar(loss) < self.learn:
                 return
-            """
+
         
 
 
