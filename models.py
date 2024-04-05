@@ -101,16 +101,10 @@ class RegressionModel(object):
         """
         "*** YOUR CODE HERE ***"
         #f(x) = relu( relu(x * W1 + b1) * W2 + b2) * W3 + b3
-
         layer1output = nn.ReLU(nn.AddBias(nn.Linear(x, self.W1), self.B1)) # relu(x * W1 + b1)
-        print("LAYER1")
-        print(layer1output)
         layer2output = nn.ReLU(nn.AddBias(nn.Linear(layer1output, self.W2), self.B2)) #relu( layer1 * W2 + b2)
-        print("LAYER2")
-        print(layer2output)
-        prediction = nn.AddBias(nn.Linear(layer2output, self.W3), self.B3) # layer2 * W3 + b3
+        prediction = (nn.AddBias(nn.Linear(layer2output, self.W3), self.B3)) # layer2 * W3 + b3
         return prediction
-
 
     def get_loss(self, x, y):
         """
