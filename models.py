@@ -162,6 +162,22 @@ class DigitClassificationModel(object):
     def __init__(self):
         # Initialize your model parameters here
         "*** YOUR CODE HERE ***"
+        #Underfit = increase output size
+        #Overfit = decrease output size
+        self.learn = 0.5
+        self.batch = 100
+        #Hidden Layer 1
+        self.W1 = nn.Parameter(784,261)
+        self.B1 = nn.Parameter(1,261)
+        #Hidden Layer 2
+        self.W2 = nn.Parameter(261,88)
+        self.B2 = nn.Parameter(1,88)
+        #Hidden Layer 3
+        self.W3 = nn.Parameter(88,30)
+        self.B3 = nn.Parameter(1,30)
+        #Output Layer
+        self.W4 = nn.Parameter(30,10)
+        self.B4 = nn.Parameter(1,10)#0-9 10 digits
 
     def run(self, x):
         """
@@ -178,6 +194,11 @@ class DigitClassificationModel(object):
                 (also called logits)
         """
         "*** YOUR CODE HERE ***"
+        layer1output = nn.ReLU(nn.AddBias(nn.Linear(x, self.W1), self.B1)) # relu(x * W1 + b1)
+        layer2output = nn.ReLU(nn.AddBias(nn.Linear(layer1output, self.W2), self.B2)) #relu( layer1 * W2 + b2)
+        layer3output = nn.ReLU(nn.AddBias(nn.Linear(layer2output, self.W3), self.B3)) #relu( layer2 * W3 + b3)
+        prediction = nn.AddBias(nn.Linear(layer3output, self.W4), self.B4) # layer3 * W4 + b4
+        return prediction
 
     def get_loss(self, x, y):
         """
@@ -193,10 +214,27 @@ class DigitClassificationModel(object):
         Returns: a loss node
         """
         "*** YOUR CODE HERE ***"
+        prediciton = self.run(x)
+        loss  = nn.SoftmaxLoss(prediciton,y)
+        return loss
 
     def train_model(self, dataset):
         """
         Trains the model.
         """
         "*** YOUR CODE HERE ***"
+        while True:
+            for xmat, yvec in dataset.iterate_once(self.batch):
+                loss = self.get_loss(xmat,yvec)
+                
+                grad_wrt_W1, grad_wrt_B1,grad_wrt_W2, grad_wrt_B2,grad_wrt_W3, grad_wrt_B3,grad_wrt_W4, grad_wrt_B4 = nn.gradients([self.W1, self.B1,self.W2, self.B2,self.W3, self.B3,self.W4, self.B4], loss)
+                self.W1.update(-self.learn,grad_wrt_W1)
+                self.B1.update(-self.learn,grad_wrt_B1)
+                self.W2.update(-self.learn,grad_wrt_W2)
+                self.B2.update(-self.learn,grad_wrt_B2)
+                self.W3.update(-self.learn,grad_wrt_W3)
+                self.B3.update(-self.learn,grad_wrt_B3)
+
+            if dataset.get_validation_accuracy() > 0.98:
+                return
 
